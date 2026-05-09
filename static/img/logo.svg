@@ -1,0 +1,34 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    
+    <!-- Central chip -->
+    <rect x="70" y="70" width="60" height="60" rx="8"/>
+
+    <!-- Top paths -->
+    <path d="M100 70 V40"/>
+    <path d="M85 70 V50"/>
+    <path d="M115 70 V50"/>
+
+    <!-- Bottom paths -->
+    <path d="M100 130 V160"/>
+    <path d="M85 130 V150"/>
+    <path d="M115 130 V150"/>
+
+    <!-- Left paths -->
+    <path d="M70 100 H40"/>
+    <path d="M70 85 H50"/>
+    <path d="M70 115 H50"/>
+
+    <!-- Right paths -->
+    <path d="M130 100 H160"/>
+    <path d="M130 85 H150"/>
+    <path d="M130 115 H150"/>
+
+    <!-- Corners (angled circuit feel) -->
+    <path d="M70 70 L50 50"/>
+    <path d="M130 70 L150 50"/>
+    <path d="M70 130 L50 150"/>
+    <path d="M130 130 L150 150"/>
+
+  </g>
+</svg>

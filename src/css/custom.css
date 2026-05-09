@@ -1,0 +1,23 @@
+/* NVIDIA-inspired accent colors */
+:root {
+  --ifm-color-primary: #76b900;          /* NVIDIA green */
+  --ifm-color-primary-dark: #67a300;
+  --ifm-color-primary-darker: #629b00;
+  --ifm-color-primary-darkest: #507f00;
+  --ifm-color-primary-light: #85cf00;
+  --ifm-color-primary-lighter: #8ad700;
+  --ifm-color-primary-lightest: #9df000;
+  --ifm-code-font-size: 90%;
+  --docusaurus-highlighted-code-line-bg: rgba(118, 185, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #76b900;
+  --ifm-color-primary-dark: #67a300;
+  --ifm-color-primary-darker: #629b00;
+  --ifm-color-primary-darkest: #507f00;
+  --ifm-color-primary-light: #85cf00;
+  --ifm-color-primary-lighter: #8ad700;
+  --ifm-color-primary-lightest: #9df000;
+  --docusaurus-highlighted-code-line-bg: rgba(118, 185, 0, 0.15);
+}

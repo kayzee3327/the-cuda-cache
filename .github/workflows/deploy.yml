@@ -1,0 +1,117 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub Pages Deployment — Docusaurus Static Site
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# REQUIRED REPOSITORY SETTINGS (do this once, in the GitHub UI):
+#
+#  1. Settings → Pages → Source: set to "GitHub Actions" (not "Deploy from branch").
+#     This tells GitHub to accept deployments from this workflow rather than
+#     auto-deploying from a branch root.
+#
+#  2. Settings → Actions → General → Workflow permissions:
+#     Set to "Read and write permissions" so the workflow can push the built
+#     site to GitHub Pages via the official actions/deploy-pages action.
+#     Alternatively, leave it on "Read" and instead use a fine-grained PAT
+#     stored as a repository secret — see the comment in the "Deploy" step.
+#
+#  3. After the first successful run, your site will be live at:
+#     https://<YOUR_GITHUB_USERNAME>.github.io/NV-GPU-Knowledge-Base/
+#     Update baseUrl in docusaurus.config.js if you rename the repo.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main        # Trigger on every push to main
+
+  # Allow manual runs from the Actions tab (useful for debugging)
+  workflow_dispatch:
+
+# Only one deployment should run at a time. If a new push arrives while
+# a deploy is in progress, cancel the older run rather than queuing both.
+concurrency:
+  group: github-pages-deploy
+  cancel-in-progress: true
+
+# Minimal permissions following least-privilege principle.
+# The "pages" and "id-token" permissions are required by actions/deploy-pages.
+permissions:
+  contents: read       # Read repo contents to check out code
+  pages: write         # Write to GitHub Pages
+  id-token: write      # Required for OIDC-based Pages deployment (no PAT needed)
+
+jobs:
+  # ── JOB 1: Build ────────────────────────────────────────────────────────────
+  build:
+    name: Build Docusaurus Site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0    # Full history so Docusaurus can use git dates in docs
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'          # LTS — matches Docusaurus 3.x requirements (≥18)
+          cache: 'npm'                # Cache node_modules based on package-lock.json
+
+      - name: Install dependencies
+        run: npm ci                   # Clean install — faster and reproducible in CI
+
+      - name: Build static site
+        run: npm run build
+        env:
+          # Treat broken links as errors (matches onBrokenLinks: 'throw' in config).
+          # Remove this if you want the build to succeed despite broken links during
+          # early drafting.
+          NODE_OPTIONS: '--max-old-space-size=4096'   # Prevent OOM on large sites
+
+      # Upload the built output (./build/) as a GitHub Pages artifact.
+      # actions/upload-pages-artifact knows the standard Pages artifact format.
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./build             # Docusaurus output directory
+
+  # ── JOB 2: Deploy ───────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build                  # Only run after build succeeds
+    runs-on: ubuntu-latest
+
+    # This environment is automatically created and managed by GitHub Pages.
+    # It adds a deployment status badge and a link to the live URL.
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+        # This action uses the OIDC id-token (granted above) to authenticate
+        # with GitHub Pages — no personal access token or secret required.
+        # If your org disables OIDC, create a PAT with "repo" scope, store it
+        # as a repository secret named PAGES_DEPLOY_TOKEN, and use the
+        # JamesIves/github-pages-deploy-action instead (see commented block below).
+
+# ─── ALTERNATIVE DEPLOY STEP (PAT-based, if OIDC is unavailable) ─────────────
+#
+#      - name: Checkout (needed for JamesIves action)
+#        uses: actions/checkout@v4
+#
+#      - name: Deploy via PAT
+#        uses: JamesIves/github-pages-deploy-action@v4
+#        with:
+#          token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+#          branch: gh-pages          # Target branch (must exist or be created)
+#          folder: build             # The Docusaurus output folder
+#          clean: true               # Remove stale files from the target branch
+#
+# ─────────────────────────────────────────────────────────────────────────────

@@ -1,0 +1,16 @@
+services:
+  docusaurus:
+    build: .
+    container_name: docusaurus
+    ports:
+      - "3001:3001"
+      - "3000:3000"
+    volumes:
+      # Mount your local Windows directory to /app in the container
+      - .:/app
+      # Create an anonymous volume for node_modules so the container's 
+      # Linux dependencies don't clash with any Windows node_modules you might have
+      - /app/node_modules
+    environment:
+      # Tell Docusaurus to use polling for hot-reloading
+      - CHOKIDAR_USEPOLLING=true
