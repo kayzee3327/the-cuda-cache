@@ -15,7 +15,7 @@
 #     stored as a repository secret — see the comment in the "Deploy" step.
 #
 #  3. After the first successful run, your site will be live at:
-#     https://<YOUR_GITHUB_USERNAME>.github.io/NV-GPU-Knowledge-Base/
+#     https://<YOUR_GITHUB_USERNAME>.github.io/the-cuda-cache/
 #     Update baseUrl in docusaurus.config.js if you rename the repo.
 #
 # ─────────────────────────────────────────────────────────────────────────────
